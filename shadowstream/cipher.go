@@ -3,6 +3,8 @@ package shadowstream
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/md5"
+	"crypto/rc4"
 	"errors"
 	"strconv"
 
@@ -54,6 +56,33 @@ func AESCFB(key []byte) (Cipher, error) {
 		return nil, err
 	}
 	return &cfbStream{blk}, nil
+}
+
+func rc4_md5_enc_dec(iv []byte, key []byte) cipher.Stream {
+	h := md5.New()
+	h.Write(key)
+	h.Write(iv)
+	rc4key := h.Sum(nil)
+
+	c, err := rc4.NewCipher(rc4key)
+	if err != nil {
+		panic(err)
+	}
+	return c
+}
+
+type rc4Stream struct{key []byte}
+
+func (b *rc4Stream) IVSize() int { return 16 }
+func (b *rc4Stream) Decrypter(iv []byte) cipher.Stream {
+	return rc4_md5_enc_dec(iv, b.key)
+}
+func (b *rc4Stream) Encrypter(iv []byte) cipher.Stream {
+	return rc4_md5_enc_dec(iv, b.key)
+}
+
+func RC4MD5(key []byte) (Cipher, error) {
+	return &rc4Stream{key}, nil
 }
 
 // IETF-variant of chacha20

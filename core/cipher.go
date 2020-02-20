@@ -54,6 +54,7 @@ var streamList = map[string]struct {
 	"AES-192-CTR":   {24, shadowstream.AESCTR},
 	"AES-256-CTR":   {32, shadowstream.AESCTR},
 	"AES-128-CFB":   {16, shadowstream.AESCFB},
+	"RC4-MD5":       {16, shadowstream.RC4MD5},
 	"AES-192-CFB":   {24, shadowstream.AESCFB},
 	"AES-256-CFB":   {32, shadowstream.AESCFB},
 	"CHACHA20-IETF": {32, shadowstream.Chacha20IETF},
